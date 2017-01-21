@@ -1,0 +1,29 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+version = 0.1
+sourceCompatibility = 1.8
+
+sourceSets{
+	main{
+		java{
+			srcDirs 'src/main/java'
+			srcDirs 'src/main/ws'
+		}
+	}
+}
+sourceSets.main.output.classesDir = file('build/class')
+
+// Set main class for gradle run
+mainClassName = 'hello.jaxws.client.HelloClient'
+// Set main class for executable jar
+jar{
+	manifest{attributes 'Main-Class': 'hello.jaxws.client.HelloClient'}
+}
+
+defaultTasks 'compileJava', 'run'
+
+
+dependencies{
+}
+

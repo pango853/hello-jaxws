@@ -1,0 +1,19 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+version = 0.1
+sourceCompatibility = 1.8
+
+// Set main class for gradle run
+mainClassName = 'hello.jaxws.endpoint.HelloWSPublisher'
+// Set main class for executable jar
+jar{
+	manifest{attributes 'Main-Class': 'hello.jaxws.endpoint.HelloWSPublisher'}
+}
+
+defaultTasks 'compileJava', 'run'
+
+dependencies{
+}
+
+
