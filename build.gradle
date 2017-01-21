@@ -1,6 +1,23 @@
 
-apply plugin: 'java'
-
 version = 0.1
-sourceCompatibility = 1.8
+
+// Run gradle -q hello to see
+Closure cl = { task -> println "I'm $task.project.name $version" }
+//task('hello').doLast(cl)
+//project(':hello-client') {
+allprojects{
+	task('hello').doLast(cl)
+}
+subprojects{
+	hello{
+		doLast{
+			println "- I'm a sub-project"
+		}
+	}
+}
+project(':hello-client').hello {
+    doLast {
+        println "  - I'm client."
+    }
+}
 

@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-version = 0.1
+version = rootProject.version
 sourceCompatibility = 1.8
 
 // Set main class for gradle run
@@ -16,4 +16,7 @@ defaultTasks 'compileJava', 'run'
 dependencies{
 }
 
+hello.doLast{
+	println "    - I'm hello-service version = $version"
+}
 
