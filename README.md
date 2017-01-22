@@ -1,28 +1,51 @@
 
-# Run me
+# JAX-WS tutorial
 
-## hello-service
+## Build it
 
-Create web service endpoint
-> gradle build
-> java -jar build/libs/hello-service-0.1.jar
+```
+> gradle -p hello-service run
+```
+* Access http://localhost:8080/WS/Hello?wsdl to see details
+* Ctrl-C
+```
+> gradle -p hello-service generatews
+```
 
-OR just run the default tasks
-> gradle
+```
+> gradle -p hello-client importws
+> gradle -p hello-client build
+```
 
-## hello-client
+```
+> gradle -p hello-webclient importws
+> gradle -p hello-webclient compileJava
+> gradle -p hello-webclient appRun
+```
+* After all access http://localhost:8181/hello-webclient/hello to see how it works.
 
-Generate the client stubs using wsimport
-> cd hello-client/
-> wsimport -s src/main/ws/ http://localhost:8080/WS/Hello?wsdl
+## Run it
+### Start server
+```
+> gradle -p hello-service run
+```
+* Access http://localhost:8080/WS/Hello?wsdl to see details
 
-> gradle run
+### Run client
+```
+> gradle -p hello-client runClient
+```
 
-## hello-webclient
+### Run web client
+```
+> gradle -p hello-webclient appRun
+```
+* After all access http://localhost:8181/hello-webclient/hello to see how it works.
 
-> cd hello-webclient/
-> wsimport -s src/main/ws/ http://localhost:8080/WS/Hello?wsdl
-> gradle build appRun
 
-After all access http://localhost:8181/hello-webclient/hello to see how it works.
+## Others
+```
+> gradle -p hello-service build
+> java -jar hello-service/build/libs/hello-service-0.1.jar
+```
 

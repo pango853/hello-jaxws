@@ -1,5 +1,4 @@
 apply plugin: 'java'
-apply plugin: 'application'
 
 version = rootProject.version
 sourceCompatibility = 1.8
@@ -8,14 +7,12 @@ sourceSets{
 	main{
 		java{
 			srcDirs 'src/main/java'
-			srcDirs 'src/main/ws'
+			srcDirs 'build/wsimport/src'
 		}
 	}
 }
 sourceSets.main.output.classesDir = file('build/class')
 
-// Set main class for gradle run
-mainClassName = 'hello.jaxws.client.HelloClient'
 // Set main class for executable jar
 jar{
 	manifest{attributes 'Main-Class': 'hello.jaxws.client.HelloClient'}
@@ -23,7 +20,50 @@ jar{
 
 defaultTasks 'compileJava', 'run'
 
-
-dependencies{
+// Create run task
+task runClient(dependsOn: 'classes', type:JavaExec) {
+	main= 'hello.jaxws.client.HelloClient'	
+	classpath = sourceSets.main.runtimeClasspath
 }
+
+// wsimport task
+repositories{
+	mavenCentral()
+}
+configurations{
+	wsimport
+}
+dependencies{
+	wsimport 'com.sun.xml.ws:jaxws-tools:2.2.10'
+}
+
+task importws{
+	ext.outputDir = "${buildDir}/wsimport/src"
+	ext.classesDir = "${buildDir}/wsimport/classes"
+	ext.wsdlPath = "${projectDir}/../hello-service/build/wsgen/wsdl/HelloImplService.wsdl"
+
+	inputs.file wsdlPath
+	outputs.dir outputDir
+
+	doLast{
+		project.ant{
+			taskdef(name:'wsimport', classname:'com.sun.tools.ws.ant.WsImport', classpath:configurations.wsimport.asPath)
+
+			mkdir(dir: outputDir)
+			mkdir(dir: classesDir)
+
+			// wsimport -s build/wsimport/src/ http://localhost:8080/WS/Hello?wsdl
+			wsimport(
+				debug:true,
+				verbose:true,
+				sourcedestdir:outputDir,
+				destdir:classesDir,
+				keep:true,
+				extension:true,
+				wsdl:wsdlPath)
+				//wsdl:"http://localhost:8080/WS/Hello?wsdl")
+		}
+	}
+}
+compileJava.dependsOn importws
 

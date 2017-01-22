@@ -13,10 +13,49 @@ jar{
 
 defaultTasks 'compileJava', 'run'
 
-dependencies{
-}
-
 hello.doLast{
 	println "    - I'm hello-service version = $version"
 }
+
+// Use wsgen
+repositories{
+	mavenCentral()
+}
+configurations{
+	wsgen
+}
+dependencies{
+	wsgen 'com.sun.xml.ws:jaxws-tools:2.2.10'
+}
+
+task generatews{
+	def inputDir = file("${buildDir}/classes/main")
+	def classesDir = file("${buildDir}/wsgen/classes")
+	def srcDir = file("${buildDir}/wsgen/src")
+	def wsdlDir = file("${buildDir}/wsgen/wsdl")
+	inputs.dir inputDir
+	outputs.files classesDir, srcDir, wsdlDir
+	doLast{
+		// > mkdir -p build/wsgen
+		// > wsgen -s build/wsgen -d build/wsgen -cp build/classes/main hello.jaxws.endpoint.HelloImpl
+		// > wsgen -d build/wsgen -wsdl -cp build/classes/main hello.jaxws.endpoint.HelloImpl
+		classesDir.mkdirs()
+		srcDir.mkdirs()
+		wsdlDir.mkdirs()
+		ant{
+			taskdef(name:'wsgen', classname:'com.sun.tools.ws.ant.WsGen', classpath:configurations.wsgen.asPath)
+			wsgen(
+				verbose:true,
+				debug:true,
+				keep:true,
+				destdir:classesDir,
+				sourcedestdir:srcDir,
+				resourcedestdir:wsdlDir,
+				genwsdl:'true',
+				classpath:inputDir,
+				sei:'hello.jaxws.endpoint.HelloImpl')
+		}
+	}
+}
+
 

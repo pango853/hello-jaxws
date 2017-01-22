@@ -12,7 +12,7 @@ sourceSets{
 	main{
 		java{
 			srcDirs 'src/main/java'
-			srcDirs 'src/main/ws'
+			srcDirs 'build/wsimport/src'
 		}
 	}
 }
@@ -30,4 +30,45 @@ gretty{
 	//contextPath =
 	servletContainer = 'jetty9'
 }
+
+// wsimport task
+repositories{
+	mavenCentral()
+}
+configurations{
+	wsimport
+}
+dependencies{
+	wsimport 'com.sun.xml.ws:jaxws-tools:2.2.10'
+}
+
+task importws{
+	ext.outputDir = "${buildDir}/wsimport/src"
+	ext.classesDir = "${buildDir}/wsimport/classes"
+	ext.wsdlPath = "${projectDir}/../hello-service/build/wsgen/wsdl/HelloImplService.wsdl"
+
+	inputs.file wsdlPath
+	outputs.dir outputDir
+
+	doLast{
+		project.ant{
+			taskdef(name:'wsimport', classname:'com.sun.tools.ws.ant.WsImport', classpath:configurations.wsimport.asPath)
+
+			mkdir(dir: outputDir)
+			mkdir(dir: classesDir)
+
+			// wsimport -s build/wsimport/src/ http://localhost:8080/WS/Hello?wsdl
+			wsimport(
+				debug:true,
+				verbose:true,
+				sourcedestdir:outputDir,
+				destdir:classesDir,
+				keep:true,
+				extension:true,
+				wsdl:wsdlPath)
+				//wsdl:"http://localhost:8080/WS/Hello?wsdl")
+		}
+	}
+}
+compileJava.dependsOn importws
 
