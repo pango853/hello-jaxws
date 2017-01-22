@@ -3,14 +3,6 @@ apply plugin: 'java'
 version = rootProject.version
 sourceCompatibility = 1.8
 
-sourceSets{
-	main{
-		java{
-			srcDirs 'src/main/java'
-			srcDirs 'build/wsimport/src'
-		}
-	}
-}
 sourceSets.main.output.classesDir = file('build/class')
 
 // Set main class for executable jar
@@ -65,5 +57,9 @@ task importws{
 		}
 	}
 }
-compileJava.dependsOn importws
+
+compileJava {
+	dependsOn importws
+	source importws.outputDir
+}
 
